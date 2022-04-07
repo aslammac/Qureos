@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:provider/provider.dart';
 import 'package:qureos/providers/auth.dart';
 //widgets
@@ -26,6 +29,8 @@ class _LoginFormState extends State<LoginForm> {
     "email": "",
     "password": "",
   };
+  
+  
 
   @override
   void dispose() {
@@ -42,15 +47,18 @@ class _LoginFormState extends State<LoginForm> {
         setState(() {
           _isLoading = true;
         });
-        // await Provider.of<AuthProvider>(context, listen: false)
-        //     .signin(formData["email"] ?? "", formData["password"] ?? "");
-        setState(() {
-          _isLoading = false;
+        Future.delayed(const Duration(seconds: 2), () {
+          Provider.of<AuthProvider>(context, listen: false).signin(
+            formData["email"]??"",
+            formData["password"]??"",
+          );
+          setState(() {
+            _isLoading = false;
+          });
         });
-        if (widget.isPopup) {
-          // Provider.of<NavProvider>(context, listen: false).selectedTab = 0;
-          Navigator.pop(context);
-        }
+        
+
+        
       } catch (e) {
         print(e);
         setState(() {
@@ -60,6 +68,23 @@ class _LoginFormState extends State<LoginForm> {
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
+  }
+
+  void googleSignInFun() async{
+    final googleSignIn = MockGoogleSignIn();
+    final signinAccount = await googleSignIn.signIn();
+    final googleAuth = await signinAccount!.authentication;
+    // ignore: unused_local_variable
+    
+    final user = MockUser(
+      isAnonymous: false,
+      uid: 'someuid',
+      email: 'bob@somedomain.com',
+      displayName: 'Bob',
+    );
+    final auth = MockFirebaseAuth(mockUser: user);
+
+   
   }
 
   @override
@@ -152,20 +177,18 @@ class _LoginFormState extends State<LoginForm> {
                             color: Colors.white,
                           ),
                         ),
-                      )),
+                      ),),
+                      SizedBox(height: 10),
+                      SignInButton(
+                        
+                        Buttons.Google,
+                        text: "Sign in with Google",
+                        onPressed: () => googleSignInFun(),
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                        padding: EdgeInsets.symmetric(horizontal: 60,vertical: 8), ),
             Spacer(),
-            if (widget.isProfile == false)
-              TextButton(
-                  onPressed: () => widget.isPopup
-                      ? Navigator.pop(context)
-                      : Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MainScreen(),
-                          ),
-                        ),
-                  child: Text("Skip login")),
-            SizedBox(height: 8),
           ],
         ),
       ),

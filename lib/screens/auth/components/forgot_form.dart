@@ -125,14 +125,7 @@ class _ForgotFormState extends State<ForgotForm> {
                       ),
                     )),
           Spacer(),
-          if (widget.isProfile == false)
-            TextButton(
-                onPressed: () => widget.isPopup
-                    ? Navigator.pop(context)
-                    : Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => MainScreen())),
-                child: Text("Skip login")),
-          SizedBox(height: 8),
+          
         ],
       ),
     );

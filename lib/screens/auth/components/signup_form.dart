@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:provider/provider.dart';
 import 'package:qureos/providers/auth.dart';
 //widgets
@@ -42,14 +43,18 @@ class _SignupFormState extends State<SignupForm> {
         setState(() {
           _isLoading = true;
         });
-        // await Provider.of<AuthProvider>(context, listen: false)
-        //     .signup(formData);
-        setState(() {
-          _isLoading = false;
+        Future.delayed(const Duration(seconds: 2), () {
+          Provider.of<AuthProvider>(context, listen: false).signup(
+            formData
+          );
+          setState(() {
+            _isLoading = false;
+          });
+          ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Signup Successful')));
         });
-        if (widget.isPopup) {
-          Navigator.pop(context);
-        }
+        
+        
       } catch (e) {
         print(e);
         ScaffoldMessenger.of(context)
@@ -162,17 +167,19 @@ class _SignupFormState extends State<SignupForm> {
                           ),
                         ),
                       )),
+            SizedBox(height: 10),
+                      SignInButton(
+                        
+                        Buttons.Google,
+                        text: "Sign up with Google",
+                        onPressed: () {},
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                        padding: EdgeInsets.symmetric(horizontal: 60,vertical: 8), ),
+
             Spacer(),
-            if (widget.isProfile == false)
-              TextButton(
-                  onPressed: () => widget.isPopup
-                      ? Navigator.pop(context)
-                      : Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MainScreen())),
-                  child: Text("Skip login")),
-            SizedBox(height: 8),
+            
           ],
         ),
       ),
